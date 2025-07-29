@@ -12,12 +12,15 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-// CORS configuration for production
+// CORS configuration for production and mobile compatibility
 app.use(cors({
   origin: isProduction 
-    ? process.env.CORS_ORIGIN || 'https://your-frontend-domain.vercel.app'
+    ? process.env.CORS_ORIGIN || 'https://restaurant-qr-ordering-ten.vercel.app'
     : 'http://localhost:5173',
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  optionsSuccessStatus: 200
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
