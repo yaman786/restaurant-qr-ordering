@@ -22,6 +22,7 @@ import {
   Divider
 } from '@mui/material';
 import { Add, Remove, ShoppingCart, Clear } from '@mui/icons-material';
+import { publicAPI } from '../services/api';
 
 const CustomerMenu = () => {
   const { tableNumber } = useParams();
@@ -44,21 +45,13 @@ const CustomerMenu = () => {
       setError('');
       console.log('Loading menu...');
       
-      const response = await fetch('http://localhost:3000/menu');
+      const response = await publicAPI.getMenu();
       console.log('Response status:', response.status);
+      console.log('Menu data:', response.data);
+      console.log('Data length:', response.data.length);
       
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      console.log('Menu data:', data);
-      console.log('Data type:', typeof data);
-      console.log('Data length:', data.length);
-      console.log('Is array:', Array.isArray(data));
-      
-      setMenuItems(data);
-      console.log('State set, menuItems should now be:', data.length);
+      setMenuItems(response.data);
+      console.log('State set, menuItems should now be:', response.data.length);
     } catch (err) {
       console.error('Error loading menu:', err);
       setError(`Failed to load menu: ${err.message}`);
@@ -114,20 +107,7 @@ const CustomerMenu = () => {
         quantity: item.quantity
       }));
 
-      const response = await fetch('http://localhost:3000/order', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          tableNumber: parseInt(tableNumber),
-          items: orderItems
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      const response = await publicAPI.placeOrder(parseInt(tableNumber), orderItems);
 
       setOrderPlaced(true);
       setCart([]);
